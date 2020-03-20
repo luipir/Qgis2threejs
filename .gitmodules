@@ -1,0 +1,3 @@
+[submodule "js/three-loader"]
+	path = js/three-loader
+	url = https://github.com/pnext/three-loader.git

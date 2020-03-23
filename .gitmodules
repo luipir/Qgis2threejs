@@ -1,3 +1,6 @@
 [submodule "js/three-loader"]
 	path = js/three-loader
 	url = https://github.com/pnext/three-loader.git
+[submodule "js/potree-core"]
+	path = js/potree-core
+	url = https://github.com/tentone/potree-core.git

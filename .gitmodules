@@ -4,3 +4,6 @@
 [submodule "js/potree-core"]
 	path = js/potree-core
 	url = https://github.com/tentone/potree-core.git
+[submodule "js/potree-core-three71"]
+	path = js/potree-core-three71
+	url = https://github.com/petrbroz/potree-core.git

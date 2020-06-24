@@ -305,6 +305,15 @@ class Q3DView(QWebView):
         # security settings - allow access to remote urls (for Icon)
         self.settings().setAttribute(QWebSettings.LocalContentCanAccessRemoteUrls, True)
 
+        # OpenGL optimization for canvas
+        self.settings().setAttribute(QWebSettings.Accelerated2dCanvasEnabled, True)
+        self.settings().setAttribute(QWebSettings.WebGLEnabled, True)
+
+        # for debug only
+        self.settings().setAttribute(QWebSettings.DeveloperExtrasEnabled, True)
+        self.settings().setAttribute(QWebSettings.JavascriptCanAccessClipboard, True)
+
+
     def setup(self, iface, settings, wnd=None, enabled=True):
         self.iface = iface
         self.wnd = wnd

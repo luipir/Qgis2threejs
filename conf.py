@@ -25,7 +25,7 @@ PLUGIN_VERSION = "2.4.2"
 #  0. no debug info
 #  1. JS console, qDebug
 #  2. JS console, qDebug, log file, "debug" element
-DEBUG_MODE = 1
+DEBUG_MODE = 2
 
 # multi-threading
 RUN_CNTLR_IN_BKGND = True    # If True, controller runs in a worker thread

@@ -436,10 +436,25 @@ limitations:
     if (bgcolor === null) container.classList.add("sky");
 
     // WebGLRenderer
-    app.renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
+    // app.renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
+    app.renderer = new THREE.WebGLRenderer({
+      // canvas: app.container,
+      alpha: true,
+      logarithmicDepthBuffer: true,
+      context: null,
+      precision: "highp",
+      premultipliedAlpha: true,
+      antialias: true,
+      preserveDrawingBuffer: false,
+      powerPreference: "high-performance"
+    });
     app.renderer.setSize(app.width, app.height);
     app.renderer.setClearColor(bgcolor || 0, (bgcolor === null) ? 0 : 1);
     app.container.appendChild(app.renderer.domElement);
+
+    // Potree instance
+    var pointClouds = [];
+    // var ptree = new potree.Potree()
 
     // set viewpoint if specified by URL parameters
     var vars = app.urlParams;
@@ -452,6 +467,10 @@ limitations:
     // scene
     app.scene = new Q3D.Scene();
     app.scene.addEventListener("renderRequest", function (event) {
+      // // This is where most of the potree magic happens. It updates the visiblily of the octree nodes
+      // // based on the camera frustum and it triggers any loads/unloads which are necessary to keep the
+      // // number of visible points in check.
+      // ptree.updatePointClouds(pointClouds, app.camera, app.renderer);
       app.render();
     });
 
@@ -503,6 +522,104 @@ limitations:
     app.controls.update();
 
     app.labelVisible = Q3D.Config.label.visible;
+
+
+
+
+    // EXAMPLE TO USE potree-core
+    ///////////////////////////////////////////
+    ///////////////////////////////////////////
+    ///////////////////////////////////////////
+    ///////////////////////////////////////////
+    ///////////////////////////////////////////// add poitclouds
+    // var url = "http://localhost:1234/Avila/ept.json"
+    // var url = "http://localhost:1234/Palencia_6978/ept.json"
+    // var url = "/mnt/virtualmachines/INSITU/TOOLS/Qgis2threejs/js/potree-core/data/lion_takanawa_ept_laz/ept.json";
+    var url = "http://localhost:1234/lion_takanawa_ept_laz/ept.json";
+    // var position = undefined
+    var position = new THREE.Vector3(0, 0, -3.0)
+    Potree.loadPointCloud(url, "pointcloud", function(e)
+    {
+      var points = new Potree.Group();
+      points.material.opacity = 1.0;
+      points.material.wireframe = true;
+      app.scene.add(points);
+
+      var pointcloud = e.pointcloud;
+      pointcloud.showBoundingBox = true;
+      pointcloud.projection = null;
+
+      var material = pointcloud.material;
+      material.size = 2;
+      material.pointColorType = Potree.PointColorType.RGB; //RGB | DEPTH | HEIGHT | POINT_INDEX | LOD | CLASSIFICATION
+      material.pointSizeType = Potree.PointSizeType.ADAPTIVE; //ADAPTIVE | FIXED
+      material.shape = Potree.PointShape.CIRCLE; //CIRCLE | SQUARE
+
+      // manage position and scaling
+      if(position !== undefined)
+      {
+        pointcloud.position.copy(position);
+      }
+      let scale = new THREE.Vector3(5, 5, 5);
+      const bbox = pointcloud.boundingBox.clone().expandByVector(scale);
+      // this.fitBounds(false, bbox);
+      points.add(pointcloud);
+
+      // let center = pointcloud.boundingSphere.center;
+      // app.controls.target.set( center.x, center.y, center.z );
+      // app.controls.update();
+
+    });
+    ///////////////////////////////////////////
+    ///////////////////////////////////////////
+    ///////////////////////////////////////////
+    ///////////////////////////////////////////
+
+    // // EXAMPLE TO USE three-loader
+    // // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // var fileName = "ept.json"
+    // // var fileName = "cloud.js";
+    // // var baseUrl = "http://localhost:1234/Avila/"
+    // // var baseUrl = "http://localhost:1234/Palencia_6978/ept.json"
+    // // var baseUrl = "/mnt/virtualmachines/INSITU/TOOLS/Qgis2threejs/js/potree-core/data/lion_takanawa_ept_laz/ept.json";
+    // var baseUrl = "http://localhost:1234/lion_takanawa_ept_laz/";
+    // // var baseUrl = "https://cdn.rawgit.com/potree/potree/develop/pointclouds/lion_takanawa/";
+    // const definitiveUrl = "" + baseUrl + fileName;
+
+    // ptree.loadPointCloud(
+    //   // The file name of the point cloud which is to be loaded.
+    //   fileName, 
+    //   // Given the relative URL of a file, should return a full URL.
+    //   function (url) { return definitiveUrl; }
+    // )
+    // .then(pco => {
+    // // Make the lion shows up at the center of the screen.
+    //   pco.translateX(-1);
+    //   pco.rotateX(-Math.PI / 2);
+
+
+    //   pointClouds.push(pco);
+    //   app.scene.add(pco); // Add the loaded point cloud to your ThreeJS scene.
+  
+    //   // The point cloud comes with a material which can be customized directly.
+    //   // Here we just set the size of the points.
+    //   pco.material.size = 1.0;
+    // })
+    // .catch((err) => {
+    //   console.log(err);
+    // });
+    // // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     // root element of labels
     app.scene.labelRootElement = document.getElementById("labels");
